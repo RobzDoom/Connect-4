@@ -1,105 +1,115 @@
 
 $(document).ready(function(){
   initGame();
-
+  displayPlayer();
+  firebase();
 });
 
-function initGame() {
+var col1 = $('.column_1');
+var col2 = $('.column_2');
+var col3 = $('.column_3');
+var col4 = $('.column_4');
+var col5 = $('.column_5');
+var col6 = $('.column_6');
+var teamFourGame;
 
+function initGame() {
+  $('#column_1').on('click', addPlayerCoin);
+  $('#column_2').on('click', addPlayerCoin);
+  $('#column_3').on('click', addPlayerCoin);
+  $('#column_4').on('click', addPlayerCoin);
+  $('#column_5').on('click', addPlayerCoin);
+  $('#column_6').on('click', addPlayerCoin);
 }
+
+function addPlayerCoin() {
+  var column;
+  turnOver = false;
+  if ($(this).hasClass('column_1')){
+    column = col1;
+  } else if ($(this).hasClass('column_2')){
+    column = col2;
+  }else if($(this).hasClass('column_3')){
+    column = col3;
+  }else if ($(this).hasClass('column_4')){
+    column = col4;
+  }else if ($(this).hasClass('column_5')){
+    column = col5;
+  } else {
+    column = col6;
+  }
+  for (var i = column.length - 1; (!turnOver && i > 0); i--) {
+    if(currentPlayer === 1  && !$(column[i]).hasClass('player1_token') && !$(column[i]).hasClass('player2_token')){
+      $(column[i]).addClass('player1_token');
+      turnOver = true;
+    } else if(currentPlayer === 0  && !$(column[i]).hasClass('player1_token') && !$(column[i]).hasClass('player2_token')) {
+      $(column[i]).addClass('player2_token');
+      turnOver = true;
+    }
+  }
+    changeActivePlayer(currentPlayer);
+    displayPlayer();
+}
+
+
 
 var turnOver = false;
 var player1 = 1;
 var player2 = 0;
 var currentPlayer = player1;
-var column1 = $(document).find('.column_1');
-var column2 = $(document).find('.column_2');
-var column3 = $(document).find('.column_3');
-var column4 = $(document).find('.column_4');
-var column5 = $(document).find('.column_5');
-var column6 = $(document).find('.column_6');
-var columChoice;
 
-// select column to drop in
-$(this).on('click', function(e){
-  console.log(e.target.className);
-  columnChoice = e.target;
-  handleCoinDrop(columnChoice);
-});
+function displayPlayer (){
+  if(currentPlayer === 1) {
+    // changes players color to red if active and black if waiting
+    $('.player1').find('h2').addClass('active_player');
+    $('.player2').find('h2').removeClass('active_player');
+  }else {
+    currentPlayer = 0;
+    $('.player2').find('h2').addClass('active_player');
+    $('.player1').find('h2').removeClass('active_player');
+  }
+}
 
-function handleCoinDrop(column) {
-  turnOver = false;
-  // column is equal to the colum that has been clicked on
-  switch (column) {
-    case column1:
-      column = column1;
-      break;
-    case column2:
-      column = column2;
-      break;
-    case column3:
-      column = column3;
-      break;
-    case column4:
-      column = column4;
-      break;
-    case column5:
-      column = column5;
-    break;
-    case column6:
-      column = column6;
-      break;
-    default:
-      break;
+function changeActivePlayer(player) {
+  if (player === 1 ) {
+      currentPlayer = 0;
   }
-  // check the active column for lowest possible row to add to
-  // need to change class of "full" to indicate which player owns that square
-  for (var i = column.length - 1; (!turnOver && i > 0); i--) {
-    if($(column[i]).hasClass('full') === false) {
-      $(column[i]).addClass('full');
-      turnOver = true;
-    }
+  else if (player === 0) {
+      currentPlayer = 1;
   }
-  //console.log(column);
 }
 
 
-
-displayPlayer();
-
-// function createPlayers() {
-//     var player1 = $('.player1')
-//     var player2 = $('.player2')
-//
-// }
-
-// function changeActivePlayer(currentPlayer) {
-//     if (currentPlayer == player1 ) {
-//         return player2;
-//     }
-//     else if (currentPlayer == player2) {
-//         return player1;
-//     }
-// }
-
-function changeActivePlayer() {
-    if (currentPlayer === 1 ) {
-        currentPlayer = 0;
-    }
-    else if (currentPlayer === 0) {
-        currentPlayer = 1;
-    }
+var connect4Model = new GenericFBModel('weshouldeatchips',boardUpdated);
+function boardUpdated(data){
+    console.log("Data", data);
+    teamFourGame = data.game;
 }
 
-changeActivePlayer(currentPlayer);
-console.log("current player:", currentPlayer);
 
-changeActivePlayer(currentPlayer);
-console.log("2current player:", currentPlayer);
+function firebase() {
 
-changeActivePlayer(currentPlayer);
-console.log("current player:", currentPlayer);
+}
 
-changeActivePlayer(currentPlayer);
-console.log("2current player:", currentPlayer);
+function initG2() {
 
+    col1 = $('.column_1');
+    col2 = $('.column_2');
+    col3 = $('.column_3');
+    col4 = $('.column_4');
+    col5 = $('.column_5');
+    col6 = $('.column_6');
+    teamFourGame
+}
+
+function saveData(data) {
+    teamFourGame = $('#game_body');
+    connect4Model.saveState({"game": teamFourGame.prop('innerHTML')});
+    console.log("Async sucks");
+}
+
+function replaceOldWithNew() {
+    $('#game_body').empty();
+    $('#game_body').append(teamFourGame);
+    initG2();
+}
